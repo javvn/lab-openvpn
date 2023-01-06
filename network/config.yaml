@@ -1,0 +1,27 @@
+context:
+  region: 'apne2'
+  azs:
+    - 'apne2-az1'
+    - 'apne2-az2'
+  name: 'apne2-openvpn'
+  env: 'development'
+  owner: 'jawn'
+  terraform: true
+  project: 'open-vpn'
+  cidrs:
+    primary: '10.100.0.0/16'
+
+vpc:
+  name: '${name}-vpc'
+  cidr: '${cidrs.primary}'
+
+subnet_groups:
+  public:
+    map_public_ip_on_launch: true
+    subnets:
+      - '10.100.0.0/24'
+      - '10.100.1.0/24'
+  private:
+    subnets:
+      - '10.100.2.0/24'
+      - '10.100.3.0/24'
