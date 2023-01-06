@@ -11,20 +11,24 @@ output "context" {
   value = local.context
 }
 
+output "common_tags" {
+  value = local.common_tags
+}
+
 output "vpc_id" {
   value = module.network.vpc_id
 }
 
 output "public_subnets" {
   value = {
-    subnets = module.network.public_subnets
+    subnets    = module.network.public_subnets
     cidr_block = module.network.public_subnets_cidr_blocks
   }
 }
 
 output "private_subnets" {
   value = {
-    subnets = module.network.private_subnets
+    subnets    = module.network.private_subnets
     cidr_block = module.network.private_subnets_cidr_blocks
   }
 }
