@@ -1,4 +1,7 @@
-resource "aws_eip" "open_vpn" {
-  # instance = aws_instance.
-  # vpc      = true
+resource "aws_eip" "ubuntu" {
+  instance                  = module.ec2_instance.id
+  associate_with_private_ip = module.ec2_instance.private_ip
+  vpc                       = true
+
+  tags = merge(local.common_tags, { Name = local.eip_name })
 }

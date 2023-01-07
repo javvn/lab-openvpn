@@ -18,4 +18,5 @@ locals {
 
 
   instance_name = "${local.remote_state_context.name}-ubuntu"
+  eip_name = "${local.remote_state_context.name}-eip"
 }
