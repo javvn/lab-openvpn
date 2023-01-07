@@ -15,4 +15,7 @@ locals {
   common_tags     = local.remote_state.common_tags
   private_subnets = local.remote_state.private_subnets
   public_subnets  = local.remote_state.public_subnets
+
+
+  instance_name = "${local.remote_state_context.name}-ubuntu"
 }
