@@ -33,24 +33,48 @@ data "aws_ami" "ubuntu" {
 ################################
 # MODULE - EC2 INSTANCE
 ################################
-module "ec2_instance" {
+module "public_ubuntu" {
   ################################################
   # META DATA
   ################################################
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~>3.0"
 
-  name                        = local.instance_name
+  name                        = local.public_ubuntu_name
+  instance_type               = local.ec2_context.instance_type
+  key_name                    = local.ec2_context.key_name
+  monitoring                  = local.ec2_context.monitoring
+  associate_public_ip_address = local.ec2_context.associate_public_ip_address
+   # user_data                   = local.openvpn_userdata
+
+  ami = data.aws_ami.ubuntu.id
+  vpc_security_group_ids = [
+    module.sg__ssh.security_group_id,
+    module.sg__openvpn.security_group_id,
+  ]
+  subnet_id = local.public_subnets.subnets[0]
+  tags      = merge(local.common_tags, { Name = local.public_ubuntu_name })
+
+}
+
+module "private_ubuntu" {
+  ################################################
+  # META DATA
+  ################################################
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "~>3.0"
+
+  name                        = local.private_ubuntu_name
   instance_type               = local.ec2_context.instance_type
   key_name                    = local.ec2_context.key_name
   monitoring                  = local.ec2_context.monitoring
   associate_public_ip_address = local.ec2_context.associate_public_ip_address
 
   ami                    = data.aws_ami.ubuntu.id
-  vpc_security_group_ids = [module.sg.security_group_id]
-  subnet_id              = local.public_subnets.subnets[0]
-  # subnet_id              = "subnet-eddcdzz4"
-  tags = merge(local.common_tags, { Name = local.instance_name })
+  vpc_security_group_ids = [module.sg__ssh.security_group_id]
+  subnet_id              = local.private_subnets.subnets[0]
+
+  tags = merge(local.common_tags, { Name = local.private_ubuntu_name })
 
 }
 
