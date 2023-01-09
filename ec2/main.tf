@@ -30,51 +30,29 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"]
 }
 
-################################
-# MODULE - EC2 INSTANCE
-################################
-module "public_ubuntu" {
-  ################################################
-  # META DATA
-  ################################################
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~>3.0"
-
-  name                        = local.public_ubuntu_name
+resource "aws_instance" "public_ubuntu" {
+  ami                         = data.aws_ami.ubuntu.image_id
   instance_type               = local.ec2_context.instance_type
   key_name                    = local.ec2_context.key_name
   monitoring                  = local.ec2_context.monitoring
   associate_public_ip_address = local.ec2_context.associate_public_ip_address
-   # user_data                   = local.openvpn_userdata
+  subnet_id                   = local.public_subnets.subnets[0]
+  user_data                   = local.openvpn_userdata
 
-  ami = data.aws_ami.ubuntu.id
-  vpc_security_group_ids = [
-    module.sg__ssh.security_group_id,
-    module.sg__openvpn.security_group_id,
-  ]
-  subnet_id = local.public_subnets.subnets[0]
-  tags      = merge(local.common_tags, { Name = local.public_ubuntu_name })
+  vpc_security_group_ids = [module.sg__ssh.security_group_id, module.sg__openvpn.security_group_id]
 
+  tags = merge(local.common_tags, { Name = local.public_ubuntu_name })
 }
 
-module "private_ubuntu" {
-  ################################################
-  # META DATA
-  ################################################
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "~>3.0"
-
-  name                        = local.private_ubuntu_name
+resource "aws_instance" "private_ubuntu" {
+  ami                         = data.aws_ami.ubuntu.id
   instance_type               = local.ec2_context.instance_type
   key_name                    = local.ec2_context.key_name
   monitoring                  = local.ec2_context.monitoring
   associate_public_ip_address = local.ec2_context.associate_public_ip_address
+  subnet_id                   = local.private_subnets.subnets[0]
 
-  ami                    = data.aws_ami.ubuntu.id
   vpc_security_group_ids = [module.sg__ssh.security_group_id]
-  subnet_id              = local.private_subnets.subnets[0]
 
   tags = merge(local.common_tags, { Name = local.private_ubuntu_name })
-
 }
-

@@ -1,7 +1,10 @@
 context:
   instance_type: 't2.micro'
   key_name: 'fastcampus'
-  monitoring: true
+  monitoring: false
+  # production
+  # monitoring: true
+
   associate_public_ip_address: false
 
 remote_states:
